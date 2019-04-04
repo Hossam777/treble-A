@@ -13,9 +13,9 @@ class Companies extends Migration
      */
     public function up()
     {
-        Schema::table('companies', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             //
-            $table->string('C_MAIL');
+            $table->string('C_MAIL',50);
             $table->string('C_PASSWORD');
             $table->string('NAME');
             $table->string('F_O_I_1');
@@ -24,6 +24,8 @@ class Companies extends Migration
             $table->string('F_O_I_4');
             $table->string('F_O_I_5');
             $table->primary('C_MAIL');
+
+            $table->timestamps();
         });
     }
 
@@ -36,6 +38,17 @@ class Companies extends Migration
     {
         Schema::table('companies', function (Blueprint $table) {
             //
+            $table->dropColumn('C_MAIL');
+            $table->dropColumn('C_PASSWORD');
+            $table->dropColumn('NAME');
+            $table->dropColumn('F_O_I_1');
+            $table->dropColumn('F_O_I_2');
+            $table->dropColumn('F_O_I_3');
+            $table->dropColumn('F_O_I_4');
+            $table->dropColumn('F_O_I_5');
+            $table->dropPrimary('C_MAIL');
+
+            $table->dropTimestamps();
         });
     }
 }

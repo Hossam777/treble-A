@@ -13,12 +13,21 @@ class PReplies extends Migration
      */
     public function up()
     {
-        Schema::table('p_replies', function (Blueprint $table) {
+        Schema::create('p_replies', function (Blueprint $table) {
             //
-            $table->int('P_ID');
-            $table->string('U_MAIL');
+            $table->unsignedInteger('P_ID');
+            $table->string('U_MAIL',50);
             $table->string('R_Text');
-            $table->primary(['P_ID','U_MAIL','R_Text']);
+
+            $table->foreign('U_MAIL')
+            ->references('U_MAIL')->on('users')
+            ->onDelete('cascade');
+
+            $table->foreign('P_ID')
+            ->references('P_ID')->on('posts')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -31,6 +40,17 @@ class PReplies extends Migration
     {
         Schema::table('p_replies', function (Blueprint $table) {
             //
+
+            $table->dropColumn('P_ID');
+            $table->dropColumn('U_MAIL');
+            $table->dropColumn('R_Text');
+            $table->dropPrimary(['P_ID','U_MAIL','R_Text']);
+
+            $table->dropForeign('U_MAIL');
+
+            $table->dropForeign('P_ID');
+
+            $table->dropTimestamps();
         });
     }
 }

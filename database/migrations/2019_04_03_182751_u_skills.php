@@ -13,12 +13,18 @@ class USkills extends Migration
      */
     public function up()
     {
-        Schema::table('u_skills', function (Blueprint $table) {
+        Schema::create('u_skills', function (Blueprint $table) {
             //
-            $table->string('U_MAIL');
-            $table->string('SKILL');
-            $table->int('SCORE');
+            $table->string('U_MAIL',50);
+            $table->string('SKILL',50);
+            $table->integer('SCORE');
             $table->primary(['U_MAIL','SKILL']);
+            
+            $table->foreign('U_MAIL')
+            ->references('U_MAIL')->on('users')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -31,6 +37,15 @@ class USkills extends Migration
     {
         Schema::table('u_skills', function (Blueprint $table) {
             //
+
+            $table->dropColumn('U_MAIL');
+            $table->dropColumn('SKILL');
+            $table->dropColumn('SCORE');
+            $table->dropPrimary(['U_MAIL','SKILL']);
+            
+            $table->dropForeign('U_MAIL');
+
+            $table->dropTimestamps();
         });
     }
 }

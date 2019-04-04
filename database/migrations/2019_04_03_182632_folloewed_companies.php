@@ -13,11 +13,20 @@ class FolloewedCompanies extends Migration
      */
     public function up()
     {
-        Schema::table('folloewed_companies', function (Blueprint $table) {
+        Schema::create('folloewed_companies', function (Blueprint $table) {
             //
-            $table->string('U_MAIL');
-            $table->string('F_MAIL');
-            $table->primary(['U_MAIL','F_MAIL']);
+            $table->string('U_MAIL',50);
+            $table->string('F_MAIL',50);
+
+            $table->foreign('U_MAIL')
+            ->references('U_MAIL')->on('users')
+            ->onDelete('cascade');
+
+            $table->foreign('F_MAIL')
+            ->references('C_MAIL')->on('companies')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -30,6 +39,16 @@ class FolloewedCompanies extends Migration
     {
         Schema::table('folloewed_companies', function (Blueprint $table) {
             //
+
+            $table->dropColumn('U_MAIL');
+            $table->dropColumn('F_MAIL');
+            $table->dropPrimary(['U_MAIL','F_MAIL']);
+
+            $table->dropForeign('U_MAIL');
+
+            $table->dropForeign('F_MAIL');
+
+            $table->dropTimestamps();
         });
     }
 }

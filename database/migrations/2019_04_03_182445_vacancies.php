@@ -13,17 +13,22 @@ class Vacancies extends Migration
      */
     public function up()
     {
-        Schema::table('vacancies', function (Blueprint $table) {
+        Schema::create('vacancies', function (Blueprint $table) {
             //
-            $table->int('V_ID');
-            $table->string('C_MAIL');
+            $table->increments('V_ID');
+            $table->string('C_MAIL',50);
             $table->string('TITLE');
             $table->string('DESCRIPTION');
             $table->string('REQUIRMENTS');
             $table->string('BENIFITS');
             $table->double('SALARY');
             $table->string('TYPE');
-            $table->primary('V_ID');
+
+            $table->foreign('C_MAIL')
+            ->references('C_MAIL')->on('companies')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -36,6 +41,20 @@ class Vacancies extends Migration
     {
         Schema::table('vacancies', function (Blueprint $table) {
             //
+
+            $table->dropColumn('V_ID');
+            $table->dropColumn('C_MAIL');
+            $table->dropColumn('TITLE');
+            $table->dropColumn('DESCRIPTION');
+            $table->dropColumn('REQUIRMENTS');
+            $table->dropColumn('BENIFITS');
+            $table->dropColumn('SALARY');
+            $table->dropColumn('TYPE');
+            $table->dropPrimary('V_ID');
+
+            $table->dropForeign('C_MAIL');
+
+            $table->dropTimestamps();
         });
     }
 }

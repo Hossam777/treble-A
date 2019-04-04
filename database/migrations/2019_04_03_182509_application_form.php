@@ -13,11 +13,16 @@ class ApplicationForm extends Migration
      */
     public function up()
     {
-        Schema::table('application_form', function (Blueprint $table) {
+        Schema::create('application_form', function (Blueprint $table) {
             //
-            $table->int('V_ID');
+            $table->unsignedInteger('V_ID');
             $table->string('Q');
-            $table->primary(['V_ID','Q']);
+
+            $table->foreign('V_ID')
+            ->references('V_ID')->on('vacancies')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -30,6 +35,14 @@ class ApplicationForm extends Migration
     {
         Schema::table('application_form', function (Blueprint $table) {
             //
+
+            $table->dropColumn('V_ID');
+            $table->dropColumn('Q');
+            $table->dropPrimary(['V_ID','Q']);
+
+            $table->dropForeign('V_ID');
+
+            $table->dropTimestamps();
         });
     }
 }

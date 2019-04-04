@@ -13,12 +13,17 @@ class CandidatesForm extends Migration
      */
     public function up()
     {
-        Schema::table('candidates_form', function (Blueprint $table) {
+        Schema::create('candidates_form', function (Blueprint $table) {
             //
-            $table->int('V_ID');
-            $table->string('U_MAIL');
+            $table->unsignedInteger('V_ID');
+            $table->string('U_MAIL',50);
             $table->string('A');
-            $table->primary(['V_ID','U_MAIL','A']);
+            
+            $table->foreign('V_ID')
+            ->references('V_ID')->on('vacancies')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -31,6 +36,15 @@ class CandidatesForm extends Migration
     {
         Schema::table('candidates_form', function (Blueprint $table) {
             //
+
+            $table->dropColumn('V_ID');
+            $table->dropColumn('U_MAIL');
+            $table->dropColumn('A');
+            $table->dropPrimary(['V_ID','U_MAIL','A']);
+            
+            $table->dropForeign('V_ID');
+
+            $table->dropTimestamps();
         });
     }
 }

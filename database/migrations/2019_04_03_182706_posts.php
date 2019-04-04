@@ -13,14 +13,19 @@ class Posts extends Migration
      */
     public function up()
     {
-        Schema::table('posts', function (Blueprint $table) {
+        Schema::create('posts', function (Blueprint $table) {
             //
-            $table->int('P_ID');
-            $table->string('U_MAIL');
+            $table->increments('P_ID');
+            $table->string('U_MAIL',50);
             $table->string('P_TEXT');
             $table->string('PRIVACY');
-            $table->int('VOTE');
-            $table->primary('P_ID');
+            $table->integer('VOTE');
+            
+            $table->foreign('U_MAIL')
+            ->references('U_MAIL')->on('users')
+            ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -33,6 +38,18 @@ class Posts extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             //
+
+
+            $table->dropColumn('P_ID');
+            $table->dropColumn('U_MAIL');
+            $table->dropColumn('P_TEXT');
+            $table->dropColumn('PRIVACY');
+            $table->dropColumn('VOTE');
+            $table->dropPrimary('P_ID');
+            
+            $table->dropForeign('U_MAIL');
+
+            $table->dropTimestamps();
         });
     }
 }
