@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User; 
+use Hash;
 
 class UserHandler extends Controller
 {
@@ -12,18 +14,14 @@ class UserHandler extends Controller
         $input = $request->all();
         $username_mail = $input['mail'];
         $password = $input['password'];
-        $user = new User();
-        $user = DB::table('users')->where(function($q) {
-            $q->where('USERNAME', $username_mail)
-              ->orWhere('U_MAIL', $password);
-        })->first();
-        if($user != null){
-            return response()->json(['cod'=>'401'], $this -> successStatus);
+        $user = User::where('username', $username_mail)->orWhere('u_mail', $username_mail)->first();
+
+        if($user){
+            if(Hash::check($password, $user['PASSWORD']))
+                return response()->json(['cod'=>'200','accesstoken' => 'token'], $this -> successStatus);
+            return response()->json(['cod'=>'401','message' => 'wrong password'], $this -> successStatus);
         }
-        if(Hash::make($user->password) == $password){
-            return response()->json(['cod' => '','200' => $user], $this -> successStatus);
-        }else{
-            return response()->json(['cod'=>'402'], $this -> successStatus);
-        }
+        
+            return response()->json(['cod'=>'402','message' => 'wrong mail or username'], $this -> successStatus);
     }
 }
