@@ -15,15 +15,15 @@ class Companies extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             //
-            $table->string('C_MAIL',50);
-            $table->string('C_PASSWORD');
-            $table->string('NAME');
-            $table->string('F_O_I_1');
-            $table->string('F_O_I_2');
-            $table->string('F_O_I_3');
-            $table->string('F_O_I_4');
-            $table->string('F_O_I_5');
-            $table->primary('C_MAIL');
+            $table->string('c_mail',50);
+            $table->string('c_password');
+            $table->string('name');
+            $table->string('f_o_i_1');
+            $table->string('f_o_i_2');
+            $table->string('f_o_i_3');
+            $table->string('f_o_i_4');
+            $table->string('f_o_i_5');
+            $table->primary('c_mail');
 
             $table->timestamps();
         });
@@ -36,19 +36,6 @@ class Companies extends Migration
      */
     public function down()
     {
-        Schema::table('companies', function (Blueprint $table) {
-            //
-            $table->dropColumn('C_MAIL');
-            $table->dropColumn('C_PASSWORD');
-            $table->dropColumn('NAME');
-            $table->dropColumn('F_O_I_1');
-            $table->dropColumn('F_O_I_2');
-            $table->dropColumn('F_O_I_3');
-            $table->dropColumn('F_O_I_4');
-            $table->dropColumn('F_O_I_5');
-            $table->dropPrimary('C_MAIL');
-
-            $table->dropTimestamps();
-        });
+        Schema::dropIfExists('companies');
     }
 }

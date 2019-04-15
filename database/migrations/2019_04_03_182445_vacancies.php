@@ -15,17 +15,17 @@ class Vacancies extends Migration
     {
         Schema::create('vacancies', function (Blueprint $table) {
             //
-            $table->increments('V_ID');
-            $table->string('C_MAIL',50);
-            $table->string('TITLE');
-            $table->string('DESCRIPTION');
-            $table->string('REQUIRMENTS');
-            $table->string('BENIFITS');
-            $table->double('SALARY');
-            $table->string('TYPE');
+            $table->increments('v_id');
+            $table->string('c_mail',50);
+            $table->string('title');
+            $table->string('description');
+            $table->string('requirments');
+            $table->string('benifits');
+            $table->double('salary');
+            $table->string('type');
 
-            $table->foreign('C_MAIL')
-            ->references('C_MAIL')->on('companies')
+            $table->foreign('c_mail')
+            ->references('c_mail')->on('companies')
             ->onDelete('cascade');
 
             $table->timestamps();
@@ -39,22 +39,6 @@ class Vacancies extends Migration
      */
     public function down()
     {
-        Schema::table('vacancies', function (Blueprint $table) {
-            //
-
-            $table->dropColumn('V_ID');
-            $table->dropColumn('C_MAIL');
-            $table->dropColumn('TITLE');
-            $table->dropColumn('DESCRIPTION');
-            $table->dropColumn('REQUIRMENTS');
-            $table->dropColumn('BENIFITS');
-            $table->dropColumn('SALARY');
-            $table->dropColumn('TYPE');
-            $table->dropPrimary('V_ID');
-
-            $table->dropForeign('C_MAIL');
-
-            $table->dropTimestamps();
-        });
+        Schema::dropIfExists('vacancies');
     }
 }

@@ -15,11 +15,11 @@ class QuizezResolved extends Migration
     {
         Schema::create('quizez_resolved', function (Blueprint $table) {
             //
-            $table->string('U_MAIL',50);
-            $table->integer('Q_ID');
+            $table->string('u_mail',50);
+            $table->integer('q_id');
 
-            $table->foreign('U_MAIL')
-            ->references('U_MAIL')->on('users')
+            $table->foreign('u_mail')
+            ->references('u_mail')->on('users')
             ->onDelete('cascade');
             
             $table->timestamps();
@@ -33,16 +33,6 @@ class QuizezResolved extends Migration
      */
     public function down()
     {
-        Schema::table('quizez_resolved', function (Blueprint $table) {
-            //
-
-            $table->dropColumn('U_MAIL');
-            $table->dropColumn('Q_ID');
-            $table->dropPrimary(['U_MAIL','Q_ID']);
-
-            $table->dropForeign('U_MAIL');
-
-            $table->dropTimestamps();
-        });
+        Schema::dropIfExists('quizez_resolved');
     }
 }

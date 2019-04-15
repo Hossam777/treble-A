@@ -15,11 +15,11 @@ class ApplicationForm extends Migration
     {
         Schema::create('application_form', function (Blueprint $table) {
             //
-            $table->unsignedInteger('V_ID');
-            $table->string('Q');
+            $table->unsignedInteger('v_id');
+            $table->string('q');
 
-            $table->foreign('V_ID')
-            ->references('V_ID')->on('vacancies')
+            $table->foreign('v_id')
+            ->references('v_id')->on('vacancies')
             ->onDelete('cascade');
 
             $table->timestamps();
@@ -33,16 +33,6 @@ class ApplicationForm extends Migration
      */
     public function down()
     {
-        Schema::table('application_form', function (Blueprint $table) {
-            //
-
-            $table->dropColumn('V_ID');
-            $table->dropColumn('Q');
-            $table->dropPrimary(['V_ID','Q']);
-
-            $table->dropForeign('V_ID');
-
-            $table->dropTimestamps();
-        });
+        Schema::dropIfExists('application_form');
     }
 }

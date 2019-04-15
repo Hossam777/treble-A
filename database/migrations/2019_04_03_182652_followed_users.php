@@ -15,15 +15,15 @@ class FollowedUsers extends Migration
     {
         Schema::create('followed_users', function (Blueprint $table) {
             //
-            $table->string('U_MAIL',50);
-            $table->string('F_MAIL',50);
+            $table->string('u_mail',50);
+            $table->string('f_mail',50);
             
-            $table->foreign('U_MAIL')
-            ->references('U_MAIL')->on('users')
+            $table->foreign('u_mail')
+            ->references('u_mail')->on('users')
             ->onDelete('cascade');
       
-            $table->foreign('F_MAIL')
-            ->references('U_MAIL')->on('users')
+            $table->foreign('f_mail')
+            ->references('u_mail')->on('users')
             ->onDelete('cascade');
 
             $table->timestamps();
@@ -37,19 +37,6 @@ class FollowedUsers extends Migration
      */
     public function down()
     {
-        Schema::table('followed_users', function (Blueprint $table) {
-            //
-
-
-            $table->dropColumn('U_MAIL');
-            $table->dropColumn('F_MAIL');
-            $table->dropPrimary(['U_MAIL','F_MAIL']);
-            
-            $table->dropForeign('U_MAIL');
-      
-            $table->dropForeign('F_MAIL');
-
-            $table->dropTimestamps();
-        });
+        Schema::dropIfExists('followed_users');
     }
 }

@@ -15,13 +15,13 @@ class USkills extends Migration
     {
         Schema::create('u_skills', function (Blueprint $table) {
             //
-            $table->string('U_MAIL',50);
-            $table->string('SKILL',50);
-            $table->integer('SCORE');
-            $table->primary(['U_MAIL','SKILL']);
+            $table->string('u_mail',50);
+            $table->string('skill',50);
+            $table->integer('score');
+            $table->primary(['u_mail','skill']);
             
-            $table->foreign('U_MAIL')
-            ->references('U_MAIL')->on('users')
+            $table->foreign('u_mail')
+            ->references('u_mail')->on('users')
             ->onDelete('cascade');
 
             $table->timestamps();
@@ -35,17 +35,6 @@ class USkills extends Migration
      */
     public function down()
     {
-        Schema::table('u_skills', function (Blueprint $table) {
-            //
-
-            $table->dropColumn('U_MAIL');
-            $table->dropColumn('SKILL');
-            $table->dropColumn('SCORE');
-            $table->dropPrimary(['U_MAIL','SKILL']);
-            
-            $table->dropForeign('U_MAIL');
-
-            $table->dropTimestamps();
-        });
+        Schema::dropIfExists('u_skills');
     }
 }

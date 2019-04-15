@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class followed_comany extends Model
 {
     //
-    protected $table = 'folloewed_companies';
+    protected $table = 'followed_companies';
     protected $fillable = [
         'u_mail', 'f_mail',
     ];
