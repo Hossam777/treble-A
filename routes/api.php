@@ -19,11 +19,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //'UserHandler@login'
 
-Route::post('login','UserHandler@login');
-Route::post('register','UserHandler@register');
+Route::post('login','UserHandler@Login');
+Route::post('register','UserHandler@Register');
+Route::get('userdata','UserHandler@UserData');
+Route::get('addskill','UserHandler@AddSkill');
+Route::get('updatescore','UserHandler@UpdateScore');
+Route::get('followuser','UserHandler@FollowUser');
+Route::get('followcompany','UserHandler@FollowCompany');
+Route::get('addresolvedquiz','UserHandler@AddResolvedQuiz');
+Route::get('getfollowedcompanies','UserHandler@GetFollowedCompanies');
+Route::get('getfollowedusers','UserHandler@GetFollowedUsers');
 
-
-
-Route::group(['middleware' => 'auth:api'], function(){
-    Route::get('details', 'API\UserController@details');
-});
+/*Route::group(['middleware' => 'auth:api'], function(){
+    Route::get('details', 'UserHandler@details');
+});*/

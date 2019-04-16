@@ -22,11 +22,14 @@ class Users extends Migration
             $table->string('l_name');
             $table->integer('age');
             $table->string('gender');
-            $table->string('f_o_i_1');
-            $table->string('f_o_i_2');
-            $table->string('f_o_i_3');
-            $table->string('f_o_i_4');
-            $table->string('f_o_i_5');
+            $table->string('f_o_i_1')->nullable();
+            $table->string('f_o_i_2')->nullable();
+            $table->string('f_o_i_3')->nullable();
+            $table->string('f_o_i_4')->nullable();
+            $table->string('f_o_i_5')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('remember_token',1500)->nullable();
+            
             $table->primary('u_mail');
 
             $table->timestamps();
