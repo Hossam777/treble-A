@@ -33,3 +33,7 @@ Route::get('getfollowedusers','UserHandler@GetFollowedUsers');
 /*Route::group(['middleware' => 'auth:api'], function(){
     Route::get('details', 'UserHandler@details');
 });*/
+
+
+Route::post('companies/login','CompanyHandler@login');
+Route::post('companies/register','CompanyHandler@register');
