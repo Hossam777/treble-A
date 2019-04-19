@@ -17,25 +17,50 @@ class UserHandler extends Controller
     public $successStatus = 200;
     //
     public function Login(Request $request){
+        if(Auth::attempt(['u_mail' => $request['mail'], 'password' => request('password')])){ 
+            $user = Auth::user();  
+            $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+            $success['admin'] = $user->username;
+            return response()->json($success, $this-> successStatus); 
+        }
+        if(Auth::attempt(['username' => $request['mail'], 'password' => request('password')])){ 
+            $user = Auth::user();  
+            $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+            $success['tokenName'] = $user->username;
+            return response()->json($success, $this-> successStatus); 
+        }
+        $user = User::where('u_mail',$request['mail'])->orWhere('username',$request['mail'])->first();
+        if($user)
+            return response()->json(['failed'=> ['wrong password']], 401);
+        return response()->json(['failed'=> ['wrong mail or password']], 401);
+    }
+
+    /*public function Test(){
+        $user = Auth::user();
+        return response()->json(['success' => $user], 200);
+    }*/
+
+    public function UpdateProfile(Request $request){
+        $validator = Validator::make($request->all(), [
+            'password' => 'required', 
+            'c_password' => 'required|same:password', 
+            'f_name' => 'required',
+            'l_name' => 'required',
+            'age' => 'required',
+            'gender' => 'required',
+        ]);
+        if ($validator->fails()) 
+        { 
+            return response()->json($validator->errors(), 401);            
+        }
+        $user = Auth::user();
         $input = $request->all();
-        $username_mail = $input['mail'];
-        $password = $input['password'];
-        $user = User::where('username', $username_mail)->orWhere('u_mail', $username_mail)->first();
         
-        if($user == null){
-            return response()->json(['email'=> ['wrong mail or username']], 401); 
+        foreach ($input as $key => $value) {
+            $user[$key] = $input[$key];
         }
-        else if(!Hash::check($input['password'], $user['password']))
-        {
-            return response()->json(['password'=> ['wrong password']], 401); 
-        }
-        else{
-            $success['token'] =  $user->createToken($user['u_mail'])-> accessToken;
-            $user['remember_token'] = $success['token'];
-            $user->save();
-            $success['username'] =  $user['username'];
-            return response()->json(['success' => $success], $this-> successStatus);      
-        } 
+        $user->save();
+        return response()->json(['success'=> 'updated successfully'], $this-> successStatus);
     }
     public function Register(Request $request){
         $validator = Validator::make($request->all(), [ 
@@ -54,48 +79,47 @@ class UserHandler extends Controller
         }
 
         $input = $request->all();
-        $input['password'] = Hash::make($input['password']); 
+        $input['password'] = bcrypt($input['password']); 
+        try{
         $user = User::create($input);
-         
-        $success['token'] =  $user->createToken($user['u_mail'])-> accessToken;
-        $user['remember_token'] = $success['token'];
-        $user->save();
-        $success['username'] =  $user['username'];
+        }catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(['failed' => $ex->getMessage()],402);
+        }
+        $success['token'] =  $user->createToken('MyApp')-> accessToken;
+        $success['tokenName'] =  $user['username'];
         return response()->json(['success'=>$success], $this-> successStatus);
     }
 
 
     public function UserData(Request $request) 
     { 
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user)
-            return response()->json(['success' => $user], $this -> successStatus);
-        return response()->json(['error' => 'invalid token or expired'], 401); 
+        $user = Auth::user();
+        return response()->json(['success' => $user], 200);
     }
 
     public function AddSkill(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
-            $validator = Validator::make($request->all(), [ 
-                'skill' => 'required|string',
-            ]);
-            if ($validator->fails()) 
-            { 
-                return response()->json($validator->errors(), 401);            
-            }
-            $userskill = UserSkills();
-            $userskill['u_mail'] = $user['u_mail'];
-            $userskill['skill'] = $request['skill'];
-            $userskill['score'] = '0';
-            UserSkills::create($userskill);
-            return response()->json(['success' => 'skill added'], 401);
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [ 
+            'skill' => 'required|string',
+        ]);
+        if ($validator->fails()) 
+        { 
+            return response()->json($validator->errors(), 401);            
         }
-        return response()->json(['error' => 'invalid token or expired'], 401);
+        $userskill = UserSkills();
+        $userskill['u_mail'] = $user['u_mail'];
+        $userskill['skill'] = $request['skill'];
+        $userskill['score'] = '0';
+        try{
+            UserSkills::create($userskill);
+        }catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(['failed' => $ex->getMessage()],402);
+        }
+        return response()->json(['success' => 'skill added'], 401);
     }
 
     public function UpdateScore(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
+        $user = Auth::user();
             $validator = Validator::make($request->all(), [ 
                 'skill' => 'required|string',
                 'score' => 'required|numeric' ,
@@ -104,7 +128,11 @@ class UserHandler extends Controller
             { 
                 return response()->json($validator->errors(), 401);            
             }
-            $userskill = UserSkills::where([['u_mail', $user['u_mail']], ['skill', $request['skill']]])->first();
+            try{
+                $userskill = UserSkills::where([['u_mail', $user['u_mail']], ['skill', $request['skill']]])->first();
+            }catch(\Illuminate\Database\QueryException $ex){
+                return response()->json(['failed' => $ex->getMessage()],402);
+            }
             if($userskill)
             {
                 $userskill['score'] = (int)$userskill['score'] + (int) $request['score'];
@@ -112,13 +140,10 @@ class UserHandler extends Controller
                 return response()->json(['success' => 'score updated'], 401);
             }
             return response()->json(['error' => 'invalid skill'], 401);
-        }
-        return response()->json(['error' => 'invalid token or expired'], 401);
     }
 
     public function FollowUser(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
+        $user = Auth::user();
             $validator = Validator::make($request->all(), [ 
                 'followeduser' => 'required|email',
             ]);
@@ -129,15 +154,16 @@ class UserHandler extends Controller
             $followeduser = FollowUser();
             $followeduser['u_mail'] = $user['u_mail'];
             $followeduser['f_mail'] = $request['followeduser'];
-            FollowUser::create($followeduser);
+            try{
+                FollowUser::create($followeduser);
+            }catch(\Illuminate\Database\QueryException $ex){
+                return response()->json(['failed' => $ex->getMessage()],402);
+            }
             return response()->json(['success' => 'user added to followers'], 401);
-        }
-        return response()->json(['error' => 'invalid token or expired'], 401);
     }
 
     public function FollowCompany(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
+        $user = Auth::user();
             $validator = Validator::make($request->all(), [ 
                 'followedcompany' => 'required|email',
             ]);
@@ -148,15 +174,16 @@ class UserHandler extends Controller
             $followedcompany = FollowCompany();
             $followedcompany['u_mail'] = $user['u_mail'];
             $followedcompany['c_mail'] = $request['followedcompany'];
-            FollowUser::create($followedcompany);
+            try{
+                FollowUser::create($followedcompany);
+            }catch(\Illuminate\Database\QueryException $ex){
+                return response()->json(['failed' => $ex->getMessage()],402);
+            }
             return response()->json(['success' => 'company added to followers'], 401);
-        }
-        return response()->json(['error' => 'invalid token or expired'], 401);
     }
 
     public function AddResolvedQuiz(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
+        $user = Auth::user();
             $validator = Validator::make($request->all(), [ 
                 'q_id' => 'required|numeric',
             ]);
@@ -167,28 +194,24 @@ class UserHandler extends Controller
             $quiz = Quiz();
             $quiz['u_mail'] = $user['u_mail'];
             $quiz['q_id'] = $request['q_id'];
-            Quiz::create($quiz);
+            try{
+                Quiz::create($quiz);
+            }catch(\Illuminate\Database\QueryException $ex){
+                return response()->json(['failed' => $ex->getMessage()],402);
+            }
             return response()->json(['success' => 'quiz added'], 401);
-        }
-        return response()->json(['error' => 'invalid token or expired'], 401);
     }
 
     public function GetFollowedCompanies(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
+        $user = Auth::user();
             $companies = FollowCompany::where('u_mail', $user['u_mail'])-get();
             return response()->json(['companies' => $companies], 200);
-        }
-        return response()->json(['error' => 'invalid token or expired'], 401);
     }
 
     public function GetFollowedUsers(Request $request){
-        $user = User::where('remember_token',$request['Authorization'])->first();
-        if($user){
+        $user = Auth::user();
             $companies = FollowCompany::where('u_mail', $user['u_mail'])-get();
             return response()->json(['companies' => $companies], 200);
-        }
-        return response()->json(['error' => 'invalid token or expired'], 401);
     }
-    
+
 }
