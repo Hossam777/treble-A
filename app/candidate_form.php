@@ -11,4 +11,8 @@ class candidate_form extends Model
     protected $fillable = [
         'v_id', 'u_mail', 'a',
     ];
+    
+    protected $hidden = [
+        'created_at', 'updated_at',
+    ];
 }

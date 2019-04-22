@@ -7,6 +7,7 @@ use App\User;
 use App\skill as UserSkills;
 use App\followed_user as FollowUser;
 use App\followed_comany as FollowCompany;
+use App\company as Company;
 use App\quiz as Quiz; 
 use Hash;
 use Illuminate\Support\Facades\Auth;
@@ -51,7 +52,7 @@ class UserHandler extends Controller
         ]);
         if ($validator->fails()) 
         { 
-            return response()->json($validator->errors(), 401);            
+            return response()->json($validator->errors(), 400);            
         }
         $user = Auth::user();
         $input = $request->all();
@@ -75,16 +76,12 @@ class UserHandler extends Controller
         ]);
         if ($validator->fails()) 
         { 
-            return response()->json($validator->errors(), 401);            
+            return response()->json($validator->errors(), 400);            
         }
 
         $input = $request->all();
-        $input['password'] = bcrypt($input['password']); 
-        try{
+        $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        }catch(\Illuminate\Database\QueryException $ex){
-            return response()->json(['failed' => $ex->getMessage()],402);
-        }
         $success['token'] =  $user->createToken('MyApp')-> accessToken;
         $success['tokenName'] =  $user['username'];
         return response()->json(['success'=>$success], $this-> successStatus);
@@ -104,18 +101,14 @@ class UserHandler extends Controller
         ]);
         if ($validator->fails()) 
         { 
-            return response()->json($validator->errors(), 401);            
+            return response()->json($validator->errors(), 400);            
         }
-        $userskill = UserSkills();
+        $userskill = array();
         $userskill['u_mail'] = $user['u_mail'];
         $userskill['skill'] = $request['skill'];
         $userskill['score'] = '0';
-        try{
             UserSkills::create($userskill);
-        }catch(\Illuminate\Database\QueryException $ex){
-            return response()->json(['failed' => $ex->getMessage()],402);
-        }
-        return response()->json(['success' => 'skill added'], 401);
+        return response()->json(['success' => 'skill added'], 200);
     }
 
     public function UpdateScore(Request $request){
@@ -126,20 +119,16 @@ class UserHandler extends Controller
             ]);
             if ($validator->fails()) 
             { 
-                return response()->json($validator->errors(), 401);            
+                return response()->json($validator->errors(), 400);            
             }
-            try{
                 $userskill = UserSkills::where([['u_mail', $user['u_mail']], ['skill', $request['skill']]])->first();
-            }catch(\Illuminate\Database\QueryException $ex){
-                return response()->json(['failed' => $ex->getMessage()],402);
-            }
             if($userskill)
             {
-                $userskill['score'] = (int)$userskill['score'] + (int) $request['score'];
-                $userskill->save();
-                return response()->json(['success' => 'score updated'], 401);
+                $userscore = (int)$userskill['score'] + (int) $request['score'];
+                UserSkills::where([['u_mail', $user['u_mail']], ['skill', $request['skill']]])->update(['score' => $userscore]);
+                return response()->json(['success' => 'score updated'], 200);
             }
-            return response()->json(['error' => 'invalid skill'], 401);
+            return response()->json(['error' => 'invalid skill'], 404);
     }
 
     public function FollowUser(Request $request){
@@ -149,17 +138,17 @@ class UserHandler extends Controller
             ]);
             if ($validator->fails()) 
             { 
-                return response()->json($validator->errors(), 401);            
+                return response()->json($validator->errors(), 400);            
             }
-            $followeduser = FollowUser();
+            $followeduserfound = User::where(['u_mail' => $request['followeduser']])->first();
+            if($followeduserfound == null){
+                return response()->json(['failed' => 'followed user not found'], 402);
+            }
+            $followeduser = array();
             $followeduser['u_mail'] = $user['u_mail'];
             $followeduser['f_mail'] = $request['followeduser'];
-            try{
                 FollowUser::create($followeduser);
-            }catch(\Illuminate\Database\QueryException $ex){
-                return response()->json(['failed' => $ex->getMessage()],402);
-            }
-            return response()->json(['success' => 'user added to followers'], 401);
+            return response()->json(['success' => 'user added to followers'], 200);
     }
 
     public function FollowCompany(Request $request){
@@ -169,17 +158,17 @@ class UserHandler extends Controller
             ]);
             if ($validator->fails()) 
             { 
-                return response()->json($validator->errors(), 401);            
+                return response()->json($validator->errors(), 400);            
             }
-            $followedcompany = FollowCompany();
+            $followedcompanyfound = Company::where(['c_mail' => $request['followedcompany']])->first();
+            if($followedcompanyfound == null){
+                return response()->json(['failed' => 'followed comapny not found'], 402);
+            }
+            $followedcompany = array();
             $followedcompany['u_mail'] = $user['u_mail'];
             $followedcompany['c_mail'] = $request['followedcompany'];
-            try{
                 FollowUser::create($followedcompany);
-            }catch(\Illuminate\Database\QueryException $ex){
-                return response()->json(['failed' => $ex->getMessage()],402);
-            }
-            return response()->json(['success' => 'company added to followers'], 401);
+            return response()->json(['success' => 'company added to followers'], 200);
     }
 
     public function AddResolvedQuiz(Request $request){
@@ -189,29 +178,25 @@ class UserHandler extends Controller
             ]);
             if ($validator->fails()) 
             { 
-                return response()->json($validator->errors(), 401);            
+                return response()->json($validator->errors(), 400);            
             }
-            $quiz = Quiz();
+            $quiz = array();
             $quiz['u_mail'] = $user['u_mail'];
             $quiz['q_id'] = $request['q_id'];
-            try{
                 Quiz::create($quiz);
-            }catch(\Illuminate\Database\QueryException $ex){
-                return response()->json(['failed' => $ex->getMessage()],402);
-            }
-            return response()->json(['success' => 'quiz added'], 401);
+            return response()->json(['success' => 'quiz added'], 200);
     }
 
     public function GetFollowedCompanies(Request $request){
         $user = Auth::user();
-            $companies = FollowCompany::where('u_mail', $user['u_mail'])-get();
+            $companies = FollowCompany::where('u_mail', $user['u_mail'])->get();
             return response()->json(['companies' => $companies], 200);
     }
 
     public function GetFollowedUsers(Request $request){
         $user = Auth::user();
-            $companies = FollowCompany::where('u_mail', $user['u_mail'])-get();
-            return response()->json(['companies' => $companies], 200);
+            $users = FollowUser::select('f_mail')->where('u_mail', $user['u_mail'])->get();
+            return response()->json(['users' => $users], 200);
     }
 
 }

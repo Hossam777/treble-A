@@ -34,7 +34,6 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('getfollowedcompanies','UserHandler@GetFollowedCompanies');
     Route::get('getfollowedusers','UserHandler@GetFollowedUsers');
     Route::get('updateprofile','UserHandler@UpdateProfile');
-
 });
 
 /*Route::group(['middleware' => 'auth:api'], function(){

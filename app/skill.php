@@ -11,4 +11,7 @@ class skill extends Model
     protected $fillable = [
         'u_mail', 'skill', 'score',
     ];
+    protected $hidden = [
+        'created_at', 'updated_at',
+    ];
 }
