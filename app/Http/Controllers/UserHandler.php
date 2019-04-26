@@ -17,6 +17,11 @@ class UserHandler extends Controller
 {
     public $successStatus = 200;
     //
+    /*public function Test(){
+        $user = Auth::user();
+        return response()->json(['success' => $user], 200);
+    }*/
+
     public function Login(Request $request){
         if(Auth::attempt(['u_mail' => $request['mail'], 'password' => request('password')])){ 
             $user = Auth::user();  
@@ -36,33 +41,6 @@ class UserHandler extends Controller
         return response()->json(['failed'=> ['wrong mail or password']], 401);
     }
 
-    /*public function Test(){
-        $user = Auth::user();
-        return response()->json(['success' => $user], 200);
-    }*/
-
-    public function UpdateProfile(Request $request){
-        $validator = Validator::make($request->all(), [
-            'password' => 'required', 
-            'c_password' => 'required|same:password', 
-            'f_name' => 'required',
-            'l_name' => 'required',
-            'age' => 'required',
-            'gender' => 'required',
-        ]);
-        if ($validator->fails()) 
-        { 
-            return response()->json($validator->errors(), 400);            
-        }
-        $user = Auth::user();
-        $input = $request->all();
-        
-        foreach ($input as $key => $value) {
-            $user[$key] = $input[$key];
-        }
-        $user->save();
-        return response()->json(['success'=> 'updated successfully'], $this-> successStatus);
-    }
     public function Register(Request $request){
         $validator = Validator::make($request->all(), [ 
             'u_mail' => 'required|email',
@@ -87,6 +65,28 @@ class UserHandler extends Controller
         return response()->json(['success'=>$success], $this-> successStatus);
     }
 
+    public function UpdateProfile(Request $request){
+        $validator = Validator::make($request->all(), [
+            'password' => 'required', 
+            'c_password' => 'required|same:password', 
+            'f_name' => 'required',
+            'l_name' => 'required',
+            'age' => 'required',
+            'gender' => 'required',
+        ]);
+        if ($validator->fails()) 
+        { 
+            return response()->json($validator->errors(), 400);            
+        }
+        $user = Auth::user();
+        $input = $request->all();
+        
+        foreach ($input as $key => $value) {
+            $user[$key] = $input[$key];
+        }
+        $user->save();
+        return response()->json(['success'=> 'updated successfully'], $this-> successStatus);
+    }
 
     public function UserData(Request $request) 
     { 
@@ -187,16 +187,20 @@ class UserHandler extends Controller
             return response()->json(['success' => 'quiz added'], 200);
     }
 
-    public function GetFollowedCompanies(Request $request){
+    public function GetFollowedCompanies(){
         $user = Auth::user();
             $companies = FollowCompany::where('u_mail', $user['u_mail'])->get();
             return response()->json(['companies' => $companies], 200);
     }
 
-    public function GetFollowedUsers(Request $request){
+    public function GetFollowedUsers(){
         $user = Auth::user();
             $users = FollowUser::select('f_mail')->where('u_mail', $user['u_mail'])->get();
             return response()->json(['users' => $users], 200);
+    }
+
+    public function Logout(){
+        Auth::logout();        
     }
 
 }
