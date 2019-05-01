@@ -12,7 +12,4 @@ class followed_user extends Model
         'u_mail', 'f_mail',
     ];
 
-    protected $hidden = [
-        'created_at', 'updated_at',
-    ];
 }

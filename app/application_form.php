@@ -11,7 +11,4 @@ class application_form extends Model
     protected $fillable = [
         'v_id', 'q', 
     ];
-    protected $hidden = [
-        'created_at', 'updated_at',
-    ];
 }

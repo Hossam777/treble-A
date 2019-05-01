@@ -13,12 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-/*Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-*/
-//'UserHandler@login'
-
 Route::post('login','UserHandler@Login');
 Route::post('register','UserHandler@Register');
 
@@ -40,6 +34,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('details', 'UserHandler@details');
 });*/
 
+Route::post('companies/login','CompanyHandler@Login');
+Route::post('companies/register','CompanyHandler@Register');
+/*
+Route::group(['middleware' => 'auth:companys-api'], function(){
 
-Route::post('companies/login','CompanyHandler@login');
-Route::post('companies/register','CompanyHandler@register');
+});*/

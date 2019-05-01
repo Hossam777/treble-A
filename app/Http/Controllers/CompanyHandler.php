@@ -7,22 +7,21 @@ use Illuminate\Http\Request;
 
 class CompanyHandler extends Controller
 {
-    public $unauthorizedStatus = 401;
     public $successStatus = 200;
 
 
-    public function login(Request $request){
+    public function Login(Request $request){
         $input = $request->all();
         $company_email = $input['mail'];
         $password = $input['password'];
         $company = User::where('c_mail', $company_email)->first();
 
         if($company == null){
-            return response()->json(['email'=> ['wrong mail']], $this->unauthorizedStatus);
+            return response()->json(['email'=> ['wrong mail']], 400);
         }
         else if(!Hash::check($input['password'], $company['password']))
         {
-            return response()->json(['password'=> ['wrong password']], $this->unauthorizedStatus);
+            return response()->json(['password'=> ['wrong password']], 401);
         }
         else{
 //            $success['token'] =  $company->createToken($company['c_mail'])->accessToken;
@@ -34,31 +33,24 @@ class CompanyHandler extends Controller
     }
 
 
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(),
-            [
-                'c_mail'            => 'required|email',
-                'name'              => 'required',
-                'password'          => 'required',
-                'confirm_password'  => 'required|same:password',
-            ]
-        );
+    public function Register(Request $request){
+        $validator = Validator::make($request->all(), [ 
+            'c_mail'            => 'required|email|unique:companies',
+            'name'              => 'required',
+            'password'          => 'required|min:8',
+            'c_password'        => 'required|same:password',
+        ]);
 
+        return response()->json(['success'=>'true'], $this->successStatus);
         if($validator->fails()) {
-            return response()->json($validator->error(), $this->unauthorizedStatus);
+            return response()->json($validator->error(), 402);
         }
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $company = company::create($input);
-//        $success['token'] =  $company->createToken($company['c_mail'])->accessToken;
-//        $company['remember_token'] = $success['token'];
-//        $company->save();
+        $success['token'] =  $company->createToken($company['c_mail'])->accessToken;
         $success['name'] =  $company->name;
         return response()->json(['success'=>$success], $this->successStatus);
-
-
-
     }
 }

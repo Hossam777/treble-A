@@ -37,15 +37,15 @@ class UserHandler extends Controller
         }
         $user = User::where('u_mail',$request['mail'])->orWhere('username',$request['mail'])->first();
         if($user)
-            return response()->json(['failed'=> ['wrong password']], 401);
-        return response()->json(['failed'=> ['wrong mail or password']], 401);
+            return response()->json(['failed'=> ['wrong password']], 400);
+        return response()->json(['failed'=> ['wrong mail or password']], 400);
     }
 
     public function Register(Request $request){
         $validator = Validator::make($request->all(), [ 
-            'u_mail' => 'required|email',
-            'username' => 'required' ,
-            'password' => 'required', 
+            'u_mail' => 'required|email|unique:users',
+            'username' => 'required|unique:users' ,
+            'password' => 'required|min:8', 
             'c_password' => 'required|same:password', 
             'f_name' => 'required',
             'l_name' => 'required',
@@ -60,9 +60,7 @@ class UserHandler extends Controller
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')-> accessToken;
-        $success['tokenName'] =  $user['username'];
-        return response()->json(['success'=>$success], $this-> successStatus);
+        return response()->json(['success' => 'Resgistered successfully'], $this-> successStatus); 
     }
 
     public function UpdateProfile(Request $request){

@@ -11,7 +11,4 @@ class quiz extends Model
     protected $fillable = [
         'u_mail', 'q_id',
     ];
-    protected $hidden = [
-        'created_at', 'updated_at',
-    ];
 }

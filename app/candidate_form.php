@@ -12,7 +12,4 @@ class candidate_form extends Model
         'v_id', 'u_mail', 'a',
     ];
     
-    protected $hidden = [
-        'created_at', 'updated_at',
-    ];
 }
