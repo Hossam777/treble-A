@@ -45,6 +45,11 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+
+        'company' => [
+            'driver' => 'passport',
+            'provider' => 'companies',
+        ],
     ],
 
     /*
@@ -68,6 +73,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+        'companies' => [
+            'driver' => 'eloquent',
+            'model' => App\company::class,
         ],
 
         // 'users' => [
@@ -94,6 +103,11 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'companies' => [
+            'provider' => 'companies',
             'table' => 'password_resets',
             'expire' => 60,
         ],

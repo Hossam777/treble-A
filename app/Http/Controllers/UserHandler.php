@@ -26,7 +26,7 @@ class UserHandler extends Controller
         if(Auth::attempt(['u_mail' => $request['mail'], 'password' => request('password')])){ 
             $user = Auth::user();  
             $success['token'] =  $user->createToken('MyApp')-> accessToken; 
-            $success['admin'] = $user->username;
+            $success['tokenName'] = $user->username;
             return response()->json($success, $this-> successStatus); 
         }
         if(Auth::attempt(['username' => $request['mail'], 'password' => request('password')])){ 
@@ -38,7 +38,7 @@ class UserHandler extends Controller
         $user = User::where('u_mail',$request['mail'])->orWhere('username',$request['mail'])->first();
         if($user)
             return response()->json(['failed'=> ['wrong password']], 400);
-        return response()->json(['failed'=> ['wrong mail or password']], 400);
+        return response()->json(['failed'=> ['wrong mail or username']], 400);
     }
 
     public function Register(Request $request){

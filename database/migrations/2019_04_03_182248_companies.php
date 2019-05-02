@@ -18,11 +18,12 @@ class Companies extends Migration
             $table->string('c_mail',50);
             $table->string('c_password');
             $table->string('name');
-            $table->string('f_o_i_1');
-            $table->string('f_o_i_2');
-            $table->string('f_o_i_3');
-            $table->string('f_o_i_4');
-            $table->string('f_o_i_5');
+            $table->string('f_o_i_1')->nullable();
+            $table->string('f_o_i_2')->nullable();
+            $table->string('f_o_i_3')->nullable();
+            $table->string('f_o_i_4')->nullable();
+            $table->string('f_o_i_5')->nullable();
+            $table->string('remember_token',1500)->nullable();
             $table->primary('c_mail');
 
             $table->timestamps();

@@ -36,7 +36,17 @@ Route::group(['middleware' => 'auth:api'], function(){
 
 Route::post('companies/login','CompanyHandler@Login');
 Route::post('companies/register','CompanyHandler@Register');
+
+Route::post('candidateform/add','CandidateFormHandler@AddForm');
+Route::get('candidateform/get','CandidateFormHandler@GetForm');
+
+Route::post('applicationform/add','ApplicationFormHandler@AddForm');
+Route::get('applicationform/get','ApplicationFormHandler@GetForm');
+
+Route::post('vacancy/add','VacanciesHandler@AddVacancy');
+Route::get('vacancy/company/get','VacanciesHandler@GetVacancyByCompany');
+Route::get('vacancy/get','VacanciesHandler@GetALLVacancies');
 /*
-Route::group(['middleware' => 'auth:companys-api'], function(){
+Route::group(['middleware' => 'auth:companies-api'], function(){
 
 });*/
